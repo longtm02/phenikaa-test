@@ -119,7 +119,7 @@ const Table: React.FC<ITableProps> = ({
                               : "opacity-40"
                           }`}
                         >
-                          <img alt="up" width={10} src={ImgUp} />
+                          <img alt="up" className="w-3.5" src={ImgUp} />
                         </div>
                         <div
                           className={` ${
@@ -129,7 +129,7 @@ const Table: React.FC<ITableProps> = ({
                               : "opacity-40"
                           }`}
                         >
-                          <img alt="down" width={10} src={ImgDown} />
+                          <img alt="down" className="w-3.5" src={ImgDown} />
                         </div>
                       </div>
                     )}

@@ -12,6 +12,7 @@ import {
   moviceService,
 } from "./services/movieService";
 import useDebounce from "./hooks/useDebound";
+import Layout from "./HOC/Layout";
 
 interface DataRow {
   key: string | number;
@@ -20,6 +21,7 @@ interface DataRow {
 
 const App: React.FC = () => {
   const debounce = useDebounce();
+  const [isLoading, setIsLoading] = useState(false);
   const [visibility, setVisibility] = useState(false);
   const [headers, setHeaders] = useState(HEADERS);
   const [movies, setMovies] = useState<IResponseDiscover | undefined>(
@@ -33,14 +35,16 @@ const App: React.FC = () => {
 
   useEffect(() => {
     (async function () {
+      setIsLoading(true);
       const data = await moviceService.getDiscover(params);
+      setIsLoading(false);
       setMovies(data);
     })();
   }, [params]);
 
   const handleChangeOrder = (key: string | number, order: EOrder) => {
     setSort({ key, order });
-    setParams({ ...params, sort_by: `${key}.${order}` });
+    setParams({ ...params, sort_by: `${key}.${order}`, page: 1 });
   };
 
   const handleExportExcel = () => {
@@ -67,83 +71,89 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex-inline justify-center items-center flex-col mx-auto min-h-[100vh] p-24 ">
-      <div className="flex items-center justify-between py-6">
-        <button
-          className="border px-6 py-2 rounded-3xl"
-          onClick={() => setVisibility(true)}
-        >
-          Setting Header
-        </button>
-        <button
-          className="border px-6 py-2 rounded-3xl"
-          onClick={handleExportExcel}
-        >
-          Export
-        </button>
-      </div>
-
-      <div>
-        <input
-          onChange={(e) => {
-            debounce(() =>
-              setParams({ ...params, with_original_language: e.target.value })
-            );
-          }}
-          className="border px-6 py-2 rounded-3xl outline-none mb-6"
-          placeholder="search by with_original_language"
-        />
-      </div>
-      <Table
-        data={movies?.data || []}
-        headers={headers}
-        sort={sort}
-        onChangeOrder={handleChangeOrder}
-        pagination={{
-          currentPage: movies?.pagination.currentPage || 1,
-          totalPage: movies?.pagination?.totalPage || 1,
-          onChangePage: (selected) => {
-            setParams({ ...params, page: selected });
-          },
-        }}
-      />
-
-      <Modal
-        visibility={visibility}
-        setVisibility={setVisibility}
-        className="h-fit inline-flex"
-      >
-        <div className="">
-          <div className=" bg-white p-8 rounded-3xl">
-            {headers.map((header: ColumnHeader) => {
-              return (
-                <div
-                  key={header.key}
-                  className="flex justify-between items-center gap-12 mt-6"
-                >
-                  <div> {header.title} </div>
-                  <div>
-                    <Checkbox
-                      checked={!header.isHidden}
-                      onChange={(checked) => {
-                        setHeaders((headerState) => {
-                          return headerState.map((headerState) => {
-                            if (headerState.key === header.key) {
-                              return { ...headerState, isHidden: !checked };
-                            }
-                            return headerState;
-                          });
-                        });
-                      }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+    <Layout isLoading={isLoading}>
+      <div className="flex-inline justify-center items-center flex-col mx-auto ">
+        <div className="flex items-center justify-between py-6">
+          <button
+            className="border px-6 py-2 rounded-3xl"
+            onClick={() => setVisibility(true)}
+          >
+            Setting Header
+          </button>
+          <button
+            className="border px-6 py-2 rounded-3xl"
+            onClick={handleExportExcel}
+          >
+            Export
+          </button>
         </div>
-      </Modal>
-    </div>
+
+        <div>
+          <input
+            onChange={(e) => {
+              debounce(() =>
+                setParams({
+                  ...params,
+                  with_original_language: e.target.value,
+                  page: 1,
+                })
+              );
+            }}
+            className="border px-6 py-2 rounded-3xl outline-none mb-6"
+            placeholder="search by with_original_language"
+          />
+        </div>
+        <Table
+          data={movies?.data || []}
+          headers={headers}
+          sort={sort}
+          onChangeOrder={handleChangeOrder}
+          pagination={{
+            currentPage: movies?.pagination.currentPage || 1,
+            totalPage: movies?.pagination?.totalPage || 1,
+            onChangePage: (selected) => {
+              setParams({ ...params, page: selected });
+            },
+          }}
+        />
+
+        <Modal
+          visibility={visibility}
+          setVisibility={setVisibility}
+          className="h-fit inline-flex"
+        >
+          <div className="">
+            <div className=" bg-white p-8 rounded-3xl">
+              {headers.map((header: ColumnHeader) => {
+                return (
+                  <div
+                    key={header.key}
+                    className="flex justify-between items-center gap-12 mt-6"
+                  >
+                    <div> {header.title} </div>
+                    <div>
+                      <Checkbox
+                        checked={!header.isHidden}
+                        onChange={(checked) => {
+                          setHeaders((headerState) => {
+                            return headerState.map((headerState) => {
+                              if (headerState.key === header.key) {
+                                return { ...headerState, isHidden: !checked };
+                              }
+                              return headerState;
+                            });
+                          });
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </Modal>
+      </div>
+    </Layout>
   );
 };
 

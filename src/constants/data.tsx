@@ -31,6 +31,7 @@ const HEADERS: ColumnHeader[] = [
     title: "Vote Count",
     key: "vote_count",
     isHidden: false,
+    isSort: true
   },
 ];
 
