@@ -1,5 +1,4 @@
 import ReactPaginate from "react-paginate";
-import styles from "./style.module.scss";
 
 interface IProps {
   pageCount: number;

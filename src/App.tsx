@@ -30,7 +30,6 @@ const App: React.FC = () => {
   const [params, setParams] = useState<IParamsDiscover>({
     page: 1,
   });
-
   const [sort, setSort] = useState<ISortTable | undefined>(undefined);
 
   useEffect(() => {

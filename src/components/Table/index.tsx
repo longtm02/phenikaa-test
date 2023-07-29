@@ -52,10 +52,7 @@ const Table: React.FC<ITableProps> = ({
     setDraggedColumnIndex(null);
   };
 
-  const handleDrop = (
-    e: React.DragEvent<HTMLTableHeaderCellElement>,
-    index: number | string
-  ) => {
+  const handleDrop = () => {
     if (
       draggedColumnIndex !== null &&
       dropColumnIndex !== null &&
@@ -98,7 +95,7 @@ const Table: React.FC<ITableProps> = ({
                   onDragOver={(e) => handleDragOver(e, index)}
                   onDragEnd={handleDragEnd}
                   onDrop={(e) => {
-                    handleDrop(e, index);
+                    handleDrop();
                   }}
                   className={`${
                     draggedColumnIndex === index && "dragging"
